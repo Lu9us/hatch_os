@@ -11,6 +11,3 @@ panic = "abort"
 [profile.release]
 # we can't support stack unwinding, so just abort
 panic = "abort"
-
-[dependencies]
-bootloader = "0.9.8"

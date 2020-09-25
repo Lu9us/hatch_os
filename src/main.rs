@@ -1,28 +1,20 @@
 #![no_std]
 #![no_main]
+#![feature(global_asm)]
 
-use core::panic::PanicInfo;
+use core::ptr;
 
-static HELLO: &[u8] = b"HatchOS x86_64";
+mod panic;
+
+global_asm!(include_str!("start.s"));
 
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
-    let vga_buffer = 0xb8000 as *mut u8; // vga address for x86 processors
-
-    for (i, &byte) in HELLO.iter().enumerate() {
+pub extern "C" fn not_main() {
+    const UART0: *mut u8 = 0x0900_0000 as *mut u8;
+    let out_str = b"HatchOS AArch64 Bare Metal";
+    for byte in out_str {
         unsafe {
-            // set the character
-            *vga_buffer.offset(i as isize * 2) = byte;
-            // set its color, attributes, etc
-            *vga_buffer.offset(i as isize * 2 + 1) = (i+1) as u8;
+            ptr::write_volatile(UART0, *byte);
         }
     }
-
-    loop {}
-}
-
-// because we have #![no_std] we have to have our own panic handler
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
 }
