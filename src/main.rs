@@ -1,6 +1,6 @@
-#![no_std]
-#![no_main]
-#![feature(global_asm)]
+#![no_std]              // no standard library
+#![no_main]             // no main
+#![feature(global_asm)] // need to use some assembly
 
 use core::ptr;
 
@@ -9,7 +9,7 @@ mod panic;
 global_asm!(include_str!("start.s"));
 
 #[no_mangle]
-pub extern "C" fn not_main() {
+pub extern "C" fn os_entrypoint() {
     const UART0: *mut u8 = 0x0900_0000 as *mut u8;
     let out_str = b"HatchOS AArch64 Bare Metal";
     for byte in out_str {
